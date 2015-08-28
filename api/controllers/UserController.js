@@ -331,7 +331,7 @@ module.exports = {
 
       if (err) return res.negotiate(err);
 
-      res.ok();
+      return res.ok();
     });
   },
 
@@ -340,7 +340,7 @@ module.exports = {
       banned: req.param('banned')
     }).exec(function(err, update) {
       if (err) return res.negotiate(err);
-      res.ok();
+      return res.ok();
     });
   },
 
@@ -349,7 +349,7 @@ module.exports = {
       deleted: req.param('deleted')
     }).exec(function(err, update) {
       if (err) return res.negotiate(err);
-      res.ok();
+      return res.ok();
     });
   }
 };
