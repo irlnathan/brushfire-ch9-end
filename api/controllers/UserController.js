@@ -39,12 +39,16 @@ module.exports = {
         success: function() {
 
           if (createdUser.deleted) {
-            return res.forbidden();
+            return res.forbidden("'Your our account has been deleted.  Please visit http://brushfire.io/restore to restore your account.'");
           }
 
-          req.session.me = {};
+          if (createdUser.banned) {
+            return res.forbidden("'Your our account has been banned, most likely for adding dog videos in violation of the Terms of Service.  Please contact Chad or his mother.'");
+          }
 
-          req.session.me.id = createdUser.id;
+          // req.session.me = {};
+
+          req.session.userId = createdUser.id;
 
           return res.json();
 
@@ -54,18 +58,18 @@ module.exports = {
   },
 
   logout: function(req, res) {
-    if (!req.session.me) return res.redirect('/'); //A
+    if (!req.session.userId) return res.redirect('/');
 
-    User.findOne(req.session.me, function foundUser(err, user) { //B
+    User.findOne(req.session.userId, function foundUser(err, user) {
       if (err) return res.negotiate(err);
-      if (!user) { //C
+      if (!user) {
         sails.log.verbose('Session refers to a user who no longer exists.');
         return res.redirect('/');
       }
 
-      req.session.me = null; //D
+      req.session.userId = null;
 
-      return res.redirect('/'); //E
+      return res.redirect('/');
     });
   },
 
@@ -150,7 +154,7 @@ module.exports = {
                 return res.negotiate(err);
               }
 
-              req.session.me = createdUser.id;
+              req.session.userId = createdUser.id;
 
               return res.json(createdUser);
             });
@@ -208,7 +212,7 @@ module.exports = {
         return res.notFound();
       }
 
-      req.session.me = null;
+      req.session.userId = null;
       return res.ok();
     });
   },
@@ -241,7 +245,7 @@ module.exports = {
             deleted: false
           }).exec(function(err, updatedUser) {
 
-            req.session.me = user.id;
+            req.session.userId = user.id;
 
             return res.json(updatedUser);
           });

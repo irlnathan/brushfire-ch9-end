@@ -8,33 +8,33 @@
 module.exports = {
 
  showSignupPage: function (req, res) {
-    if (req.session.me) {     //#A
+    if (req.session.userId) {
       return res.redirect('/');
     }
 
-    return res.view('signup', {    //#B
+    return res.view('signup', {
       me: null
     });
   },
 
   showRestorePage: function (req, res) {
 
-    if (req.session.me) {     //#A
+    if (req.session.userId) {
       return res.redirect('/');
     }
 
-    return res.view('restore', {    //#B
+    return res.view('restore', {
       me: null
     });
   },
 
   showEditProfilePage: function (req, res) {
 
-    if (!req.session.me) {    //#A
+    if (!req.session.userId) {
       return res.redirect('/');
     }
 
-    User.findOne(req.session.me, function (err, user){
+    User.findOne(req.session.userId, function (err, user){
       if (err) {
         console.log('error: ', error);
         return res.negotiate(err);
@@ -59,11 +59,11 @@ module.exports = {
 
   showProfilePage: function (req, res) {
 
-    if (!req.session.me) {    //#A
+    if (!req.session.userId) {
       return res.redirect('/');
     }
 
-    User.findOne(req.session.me, function (err, user){
+    User.findOne(req.session.userId, function (err, user){
       if (err) {
         console.log('error: ', error);
         return res.negotiate(err);
@@ -86,11 +86,11 @@ module.exports = {
   },
 
   showAdminPage: function(req, res) {
-    if (!req.session.me) { //A
+    if (!req.session.userId) {
       return res.redirect('/');
     }
 
-    User.findOne(req.session.me, function(err, user) { //B
+    User.findOne(req.session.userId, function(err, user) {
 
       if (err) {
         return res.negotiate(err);
@@ -127,25 +127,25 @@ module.exports = {
 
   showHomePage: function(req, res) {
 
-    if (!req.session.me) { //#A
+    if (!req.session.userId) {
       return res.view('homepage', {
         me: null
       });
     }
 
-    User.findOne(req.session.me.id, function(err, user) { //#B
+    User.findOne(req.session.userId, function(err, user) {
       if (err) {
         return res.negotiate(err);
       }
 
-      if (!user) { //#C
+      if (!user) {
         sails.log.verbose('Session refers to a user who no longer exists- did you delete a user, then try to refresh the page with an open tab logged-in as that user?');
         return res.view('homepage', {
           me: null
         });
       }
 
-      return res.view('homepage', { //#D
+      return res.view('homepage', {
         me: {
           id: user.id,
           email: user.email,
@@ -158,13 +158,13 @@ module.exports = {
 
   showVideosPage: function(req, res) {
 
-    if (!req.session.me) {
+    if (!req.session.userId) {
       return res.view('videos', {
         me: null
       });
     }
 
-    User.findOne(req.session.me.id, function(err, user) {
+    User.findOne(req.session.userId, function(err, user) {
       if (err) {
         return res.negotiate(err);
       }
